@@ -1,79 +1,76 @@
 #include <stdio.h>
 #include <string.h>
-#include <stdlib.h>
-#include <ctype.h>
 
 #define MAX_MACROS 20
-#define MAX_LINES 100
+#define MAX_LINES 50
 #define MAX_LEN 200
 
-typedef struct {
+struct Macro {
 char name[50];
 char body[MAX_LINES][MAX_LEN];
-int count;
-} Macro;
+int lines;
+};
 
-Macro macros[MAX_MACROS];
-int macroCount = 0;
+struct Macro macros[MAX_MACROS];
+int macroCount;
 
 int findMacro(char *name) {
 int i;
+
 for (i = 0; i < macroCount; i++) {
-if (strcmp(macros[i].name, name) == 0)
-return i;
-}
-return -1;
+    if (strcmp(macros[i].name, name) == 0)
+        return i;
 }
 
-void expandLine(char *line, int depth) {
-char word[50];
-int i = 0, j = 0, index;
+return -1;
+
+}
+
+void expandMacro(char *name, int depth) {
+int index, i;
 
 if (depth > 10) {
     printf("Error: Recursive expansion limit reached.\n");
     return;
 }
 
-while (line[i] != '\0') {
-    if (isalnum((unsigned char)line[i]) || line[i] == '_') {
-        j = 0;
+index = findMacro(name);
 
-        while (isalnum((unsigned char)line[i]) ||
-               line[i] == '_') {
-            if (j < 49)
-                word[j++] = line[i];
-            i++;
-        }
+if (index == -1) {
+    printf("%s\n", name);
+    return;
+}
 
-        word[j] = '\0';
-        index = findMacro(word);
+for (i = 0; i < macros[index].lines; i++) {
+    char line[MAX_LEN];
+    char *token;
 
-        if (index != -1) {
-            int k;
-            for (k = 0; k < macros[index].count; k++)
-                expandLine(macros[index].body[k], depth + 1);
-        } else {
-            printf("%s", word);
-        }
+    strcpy(line, macros[index].body[i]);
+    token = strtok(line, " \t\n");
+
+    if (token != NULL && findMacro(token) != -1) {
+        expandMacro(token, depth + 1);
     } else {
-        putchar(line[i]);
-        i++;
+        printf("%s", macros[index].body[i]);
+
+        if (strchr(macros[index].body[i], '\n') == NULL)
+            printf("\n");
     }
 }
 
 }
 
-int main() {
+int main(void) {
+int i, j;
 char line[MAX_LEN];
 char name[50];
-int i, index;
 
 printf("Enter number of macro definitions: ");
 scanf("%d", &macroCount);
 getchar();
 
-if (macroCount < 0 || macroCount > MAX_MACROS) {
-    printf("Invalid number of macros.\n");
+if (macroCount < 1 || macroCount > MAX_MACROS) {
+    printf("Invalid number of macro definitions.\n");
     return 1;
 }
 
@@ -82,37 +79,38 @@ for (i = 0; i < macroCount; i++) {
     scanf("%49s", macros[i].name);
     getchar();
 
-    printf("Enter number of lines in macro body: ");
-    scanf("%d", &macros[i].count);
+    printf("Enter number of lines in macro %s: ",
+           macros[i].name);
+    scanf("%d", &macros[i].lines);
     getchar();
 
-    if (macros[i].count < 0 ||
-        macros[i].count > MAX_LINES) {
+    if (macros[i].lines < 1 ||
+        macros[i].lines > MAX_LINES) {
         printf("Invalid number of lines.\n");
         return 1;
     }
 
-    printf("Enter macro body, one line at a time:\n");
+    printf("Enter macro %s body:\n", macros[i].name);
 
-    for (int j = 0; j < macros[i].count; j++)
+    for (j = 0; j < macros[i].lines; j++) {
         fgets(macros[i].body[j], MAX_LEN, stdin);
+    }
 }
 
 printf("\nIdentified Macro Definitions:\n");
 
 for (i = 0; i < macroCount; i++) {
-    printf("Macro: %s\n", macros[i].name);
-    for (int j = 0; j < macros[i].count; j++)
+    printf("\nMacro %s:\n", macros[i].name);
+
+    for (j = 0; j < macros[i].lines; j++)
         printf("%s", macros[i].body[j]);
 }
 
-printf("\nEnter assembly program (END to finish):\n");
+printf("\nEnter assembly instruction to expand: ");
+scanf("%49s", name);
 
-while (fgets(line, MAX_LEN, stdin)) {
-    if (strncmp(line, "END", 3) == 0)
-        break;
-    expandLine(line, 0);
-}
+printf("\nExpanded Assembly Code:\n");
+expandMacro(name, 0);
 
 return 0;
 
