@@ -1,0 +1,9 @@
+Enter a line of C source code:
+int a = 10;
+
+Lexical Analysis:
+int : Keyword
+a : Identifier
+= : Operator
+10 : Number
+; : Special Symbol
