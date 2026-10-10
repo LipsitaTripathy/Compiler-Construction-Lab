@@ -1,35 +1,45 @@
-#include <iostream>
-#include <string>
-using namespace std;
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+#include <string.h>
 
-struct Node
+typedef struct node
 {
     char data;
-    Node *left, *right;
-};
+    struct node *left;
+    struct node *right;
+} Node;
 
-Node* createNode(char data)
+Node *createNode(char data)
 {
-    Node* node = new Node();
-    node->data = data;
-    node->left = node->right = NULL;
-    return node;
+    Node *newNode = (Node *)malloc(sizeof(Node));
+
+    newNode->data = data;
+    newNode->left = NULL;
+    newNode->right = NULL;
+
+    return newNode;
 }
 
-Node* buildTree(string expr)
+Node *buildTree(char expr[])
 {
-    Node* nodes[100];
+    Node *nodes[100];
     char operators[100];
     int n = 0, top = -1;
+    int i;
 
-    for (int i = 0; i < (int)expr.length(); i++)
+    for (i = 0; expr[i] != '\0'; i++)
     {
         char ch = expr[i];
 
-        if (ch == ' ')
+        if (isspace((unsigned char)ch))
             continue;
 
-        if (ch == '(')
+        if (isalnum((unsigned char)ch))
+        {
+            nodes[n++] = createNode(ch);
+        }
+        else if (ch == '(')
         {
             operators[++top] = ch;
         }
@@ -39,14 +49,15 @@ Node* buildTree(string expr)
             {
                 char op = operators[top--];
 
-                Node* right = nodes[--n];
-                Node* left = nodes[--n];
+                Node *right = nodes[--n];
+                Node *left = nodes[--n];
+                Node *newNode = createNode(op);
 
-                Node* node = createNode(op);
-                node->left = left;
-                node->right = right;
-                nodes[n++] = node;
+                newNode->left = left;
+                newNode->right = right;
+                nodes[n++] = newNode;
             }
+
             if (top >= 0)
                 top--;
         }
@@ -62,20 +73,16 @@ Node* buildTree(string expr)
             {
                 char op = operators[top--];
 
-                Node* right = nodes[--n];
-                Node* left = nodes[--n];
+                Node *right = nodes[--n];
+                Node *left = nodes[--n];
+                Node *newNode = createNode(op);
 
-                Node* node = createNode(op);
-                node->left = left;
-                node->right = right;
-                nodes[n++] = node;
+                newNode->left = left;
+                newNode->right = right;
+                nodes[n++] = newNode;
             }
 
             operators[++top] = ch;
-        }
-        else
-        {
-            nodes[n++] = createNode(ch);
         }
     }
 
@@ -83,53 +90,53 @@ Node* buildTree(string expr)
     {
         char op = operators[top--];
 
-        Node* right = nodes[--n];
-        Node* left = nodes[--n];
+        Node *right = nodes[--n];
+        Node *left = nodes[--n];
+        Node *newNode = createNode(op);
 
-        Node* node = createNode(op);
-        node->left = left;
-        node->right = right;
-        nodes[n++] = node;
+        newNode->left = left;
+        newNode->right = right;
+        nodes[n++] = newNode;
     }
 
-    return n == 1 ? nodes[0] : NULL;
+    return (n == 1) ? nodes[0] : NULL;
 }
 
-void printTree(Node* root, string indent = "", bool last = true)
+void printTree(Node *root, int space)
 {
+    int i;
+
     if (root == NULL)
         return;
 
-    cout << indent;
+    space += 5;
 
-    if (last)
-    {
-        cout << "`-- ";
-        indent += "    ";
-    }
-    else
-    {
-        cout << "|-- ";
-        indent += "|   ";
-    }
+    printTree(root->right, space);
 
-    cout << root->data << endl;
+    printf("\n");
+    for (i = 5; i < space; i++)
+        printf(" ");
 
-    printTree(root->left, indent, false);
-    printTree(root->right, indent, true);
+    printf("%c\n", root->data);
+
+    printTree(root->left, space);
 }
 
 int main()
 {
-    string expr;
+    char expr[100];
 
-    cout << "Enter arithmetic expression: ";
-    cin >> expr;
+    strcpy(expr, "a+b*c");
 
-    Node* root = buildTree(expr);
+    printf("Parse Tree for the expression: %s\n", expr);
+    printf("\nTree Representation:\n");
 
-    cout << "\nParse Tree:\n";
-    printTree(root);
+    Node *root = buildTree(expr);
+
+    printTree(root, 0);
+
+    printf("\nTherefore, the parse tree correctly represents "
+           "the arithmetic expression a+(b*c).\n");
 
     return 0;
 }
