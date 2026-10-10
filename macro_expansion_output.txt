@@ -1,0 +1,31 @@
+Program: Macro Definition Identification and Macro Expansion
+
+Output:
+
+Enter number of macro definitions: 2
+
+Enter macro name: INCR
+Enter number of lines in macro INCR: 1
+Enter macro INCR body:
+ADD A, 1
+
+Enter macro name: DOUBLE
+Enter number of lines in macro DOUBLE: 2
+Enter macro DOUBLE body:
+INCR
+INCR
+
+Identified Macro Definitions:
+
+Macro INCR:
+ADD A, 1
+
+Macro DOUBLE:
+INCR
+INCR
+
+Enter assembly instruction to expand: DOUBLE
+
+Expanded Assembly Code:
+ADD A, 1
+ADD A, 1
