@@ -1,0 +1,17 @@
+SOURCE CODE OPTIMIZATION
+
+1. Operator Strength Reduction
+Before Optimization: x = 5 * 2
+After Optimization:  x = 5 + 5
+Value of x = 10
+
+2. Dead Code Elimination
+Before Optimization: x = 10; y = 20; x = 30;
+After Optimization:  y = 20; x = 30;
+Value of x = 30
+
+3. Frequency Reduction
+Before Optimization:
+0 10 20
+After Optimization:
+0 10 20
