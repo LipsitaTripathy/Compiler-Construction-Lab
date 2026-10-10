@@ -1,0 +1,10 @@
+Parse Tree for the expression: a+b*c
+
+Tree Representation:
+    +
+   / \
+  a   *
+     / \
+    b   c
+
+Therefore, the parse tree correctly represents the arithmetic expression a+(b*c).
