@@ -1,137 +1,134 @@
 #include <iostream>
 #include <string>
-#include <cctype>
 using namespace std;
 
 struct Node
 {
-    string value;
-    Node* left;
-    Node* right;
-
-    Node(string val)
-    {
-        value = val;
-        left = right = nullptr;
-    }
+    char data;
+    Node *left, *right;
 };
 
-string expr;
-int pos = 0;
-
-Node* expression();
-Node* term();
-Node* factor();
-
-Node* expression()
+Node* createNode(char data)
 {
-    Node* node = term();
-
-    while (pos < (int)expr.length() &&
-           (expr[pos] == '+' || expr[pos] == '-'))
-    {
-        char op = expr[pos++];
-        Node* newNode = new Node(string(1, op));
-        newNode->left = node;
-        newNode->right = term();
-        node = newNode;
-    }
-
+    Node* node = new Node();
+    node->data = data;
+    node->left = node->right = NULL;
     return node;
 }
 
-Node* term()
+Node* buildTree(string expr)
 {
-    Node* node = factor();
+    Node* nodes[100];
+    char operators[100];
+    int n = 0, top = -1;
 
-    while (pos < (int)expr.length() &&
-           (expr[pos] == '*' || expr[pos] == '/'))
+    for (int i = 0; i < (int)expr.length(); i++)
     {
-        char op = expr[pos++];
-        Node* newNode = new Node(string(1, op));
-        newNode->left = node;
-        newNode->right = factor();
-        node = newNode;
-    }
+        char ch = expr[i];
 
-    return node;
-}
+        if (ch == ' ')
+            continue;
 
-Node* factor()
-{
-    while (pos < (int)expr.length() &&
-           isspace(static_cast<unsigned char>(expr[pos])))
-        pos++;
-
-    if (pos >= (int)expr.length())
-        return nullptr;
-
-    if (expr[pos] == '(')
-    {
-        pos++;
-        Node* node = expression();
-
-        while (pos < (int)expr.length() &&
-               isspace(static_cast<unsigned char>(expr[pos])))
-            pos++;
-
-        if (pos < (int)expr.length() && expr[pos] == ')')
-            pos++;
-
-        return node;
-    }
-
-    if (isalnum(static_cast<unsigned char>(expr[pos])) ||
-        expr[pos] == '_')
-    {
-        string operand;
-
-        while (pos < (int)expr.length() &&
-               (isalnum(static_cast<unsigned char>(expr[pos])) ||
-                expr[pos] == '_'))
+        if (ch == '(')
         {
-            operand += expr[pos++];
+            operators[++top] = ch;
         }
+        else if (ch == ')')
+        {
+            while (top >= 0 && operators[top] != '(')
+            {
+                char op = operators[top--];
 
-        return new Node(operand);
+                Node* right = nodes[--n];
+                Node* left = nodes[--n];
+
+                Node* node = createNode(op);
+                node->left = left;
+                node->right = right;
+                nodes[n++] = node;
+            }
+            if (top >= 0)
+                top--;
+        }
+        else if (ch == '+' || ch == '-' ||
+                 ch == '*' || ch == '/')
+        {
+            while (top >= 0 && operators[top] != '(' &&
+                   ((operators[top] == '*' ||
+                     operators[top] == '/') ||
+                    ((ch == '+' || ch == '-') &&
+                     (operators[top] == '+' ||
+                      operators[top] == '-'))))
+            {
+                char op = operators[top--];
+
+                Node* right = nodes[--n];
+                Node* left = nodes[--n];
+
+                Node* node = createNode(op);
+                node->left = left;
+                node->right = right;
+                nodes[n++] = node;
+            }
+
+            operators[++top] = ch;
+        }
+        else
+        {
+            nodes[n++] = createNode(ch);
+        }
     }
 
-    return nullptr;
+    while (top >= 0)
+    {
+        char op = operators[top--];
+
+        Node* right = nodes[--n];
+        Node* left = nodes[--n];
+
+        Node* node = createNode(op);
+        node->left = left;
+        node->right = right;
+        nodes[n++] = node;
+    }
+
+    return n == 1 ? nodes[0] : NULL;
 }
 
-void printTree(Node* root, int space = 0)
+void printTree(Node* root, string indent = "", bool last = true)
 {
-    if (root == nullptr)
+    if (root == NULL)
         return;
 
-    space += 5;
+    cout << indent;
 
-    printTree(root->right, space);
+    if (last)
+    {
+        cout << "`-- ";
+        indent += "    ";
+    }
+    else
+    {
+        cout << "|-- ";
+        indent += "|   ";
+    }
 
-    cout << endl;
-    for (int i = 5; i < space; i++)
-        cout << " ";
+    cout << root->data << endl;
 
-    cout << root->value << endl;
-
-    printTree(root->left, space);
+    printTree(root->left, indent, false);
+    printTree(root->right, indent, true);
 }
 
 int main()
 {
-    cout << "Enter an arithmetic expression: ";
-    getline(cin, expr);
+    string expr;
 
-    pos = 0;
-    Node* root = expression();
+    cout << "Enter arithmetic expression: ";
+    cin >> expr;
 
-    if (root == nullptr || pos != (int)expr.length())
-    {
-        cout << "Invalid expression or unsupported syntax." << endl;
-        return 1;
-    }
+    Node* root = buildTree(expr);
 
-    cout << "\nParse Tree (sideways):\n";
+    cout << "\nParse Tree:\n";
     printTree(root);
 
     return 0;
