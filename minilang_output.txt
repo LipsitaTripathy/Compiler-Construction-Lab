@@ -1,0 +1,66 @@
+============================================
+          MINILANG IMPLEMENTATION
+============================================
+Enter MiniLang program.
+Enter # on a new line to finish.
+int a;
+int b;
+a = 10;
+b = 20;
+if (a < b)
+{
+ a = a + 1;
+}
+while (a < b)
+{
+ a = a + 1;
+}
+#
+----- LEXICAL ANALYSIS -----
+int : KEYWORD
+a : IDENTIFIER
+; : DELIMITER
+int : KEYWORD
+b : IDENTIFIER
+; : DELIMITER
+a : IDENTIFIER
+= : OPERATOR
+10 : CONSTANT
+; : DELIMITER
+b : IDENTIFIER
+= : OPERATOR
+20 : CONSTANT
+; : DELIMITER
+if : KEYWORD
+( : DELIMITER
+a : IDENTIFIER
+< : OPERATOR
+b : IDENTIFIER
+) : DELIMITER
+{ : DELIMITER
+a : IDENTIFIER
+= : OPERATOR
+a : IDENTIFIER
++ : OPERATOR
+1 : CONSTANT
+; : DELIMITER
+} : DELIMITER
+while : KEYWORD
+( : DELIMITER
+a : IDENTIFIER
+< : OPERATOR
+b : IDENTIFIER
+) : DELIMITER
+{ : DELIMITER
+a : IDENTIFIER
+= : OPERATOR
+a : IDENTIFIER
++ : OPERATOR
+1 : CONSTANT
+; : DELIMITER
+} : DELIMITER
+----- SYNTAX CHECK -----
+Syntax structure is valid.
+============================================
+             END OF PROGRAM
+============================================
