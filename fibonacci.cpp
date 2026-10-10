@@ -1,32 +1,32 @@
-#include <iostream>
-using namespace std;
+#include <stdio.h>
 
 int main()
 {
-    int n, first = 0, second = 1, next;
+int n, first = 0, second = 1, next, i;
 
-    cout << "Enter the number of terms: ";
-    cin >> n;
+printf("Enter the number of terms: ");
+scanf("%d", &n);
 
-    if (n <= 0)
+if (n <= 0)
+{
+    printf("Please enter a positive number of terms.\n");
+}
+else
+{
+    printf("Fibonacci Series: ");
+
+    for (i = 1; i <= n; i++)
     {
-        cout << "Please enter a positive number of terms." << endl;
-    }
-    else
-    {
-        cout << "Fibonacci Series: ";
+        printf("%d ", first);
 
-        for (int i = 1; i <= n; i++)
-        {
-            cout << first << " ";
-
-            next = first + second;
-            first = second;
-            second = next;
-        }
-
-        cout << endl;
+        next = first + second;
+        first = second;
+        second = next;
     }
 
-    return 0;
+    printf("\n");
+}
+
+return 0;
+
 }
