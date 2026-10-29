@@ -1,0 +1,30 @@
+Sample input
+int a = 10;
+float b = 20;
+if (a < b)
+    a++;
+
+Expected output
+int a = 10;
+int -> KEYWORD
+a -> IDENTIFIER
+= -> OPERATOR
+10 -> NUMBER
+; -> SPECIAL SYMBOL
+float b = 20;
+float -> KEYWORD
+b -> IDENTIFIER
+= -> OPERATOR
+20 -> NUMBER
+; -> SPECIAL SYMBOL
+if (a < b)
+if -> KEYWORD
+( -> SPECIAL SYMBOL
+a -> IDENTIFIER
+< -> OPERATOR
+b -> IDENTIFIER
+) -> SPECIAL SYMBOL
+a++;
+a -> IDENTIFIER
+++ -> OPERATOR
+; -> SPECIAL SYMBOL
